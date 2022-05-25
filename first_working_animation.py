@@ -1,7 +1,6 @@
 import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib import colors
+from matplotlib import colors, animation
 
 # function to randomly spread fire
 
@@ -46,7 +45,7 @@ def populate_grid(size):
 
 
 def burn_out(forest, burn_time, size):
-    fire, tree = 2, 1
+    burnt, fire, tree = 3, 2, 1
     for x in range(0, size):
         for y in range(0, size):
             if forest[x, y] == fire:
@@ -54,16 +53,6 @@ def burn_out(forest, burn_time, size):
             if burn_time[x, y] == 3:
                 forest[x, y] = burnt
     return forest, burn_time
-
-
-SIZE = 500
-FOREST = populate_grid(SIZE)
-BURN_TIME = np.zeros((SIZE, SIZE), dtype=int)
-
-fig, ax = plt.subplots()
-cmap = colors.ListedColormap(["#d4a78c", "lawngreen", "#02a102", "#c73838"])
-
-MATRIX = ax.matshow(FOREST, cmap=cmap)
 
 
 def animate(i):
@@ -75,5 +64,16 @@ def animate(i):
     MATRIX.set_array(FOREST)
 
 
-ani = matplotlib.animation.FuncAnimation(fig, animate, frames=20000, interval=1000)
-plt.show()
+if __name__ == "__main__":
+    fig, ax = plt.subplots()
+    cmap = colors.ListedColormap(["#d4a78c", "lawngreen", "#02a102", "#c73838"])
+
+    SEED = 42
+    SIZE = 500
+    FOREST = populate_grid(SIZE)
+    BURN_TIME = np.zeros((SIZE, SIZE), dtype=int)
+    MATRIX = ax.matshow(FOREST, cmap=cmap)
+
+    np.random.seed(SEED)
+    ani = animation.FuncAnimation(fig, animate, frames=20000, interval=1000)
+    plt.show()

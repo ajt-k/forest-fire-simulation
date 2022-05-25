@@ -7,3 +7,8 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+
+To execute the code, run:
+```
+python first_working_animation.py
+```
