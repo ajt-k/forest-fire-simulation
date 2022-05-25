@@ -18,8 +18,8 @@ def fire_spread(forest, size):
                         forest[x + p, y + q] = fire
 
                 for r, s in diag_region:
-                    if forest[x + p, y + q] == tree and np.random.random() <= prob_spread:
-                        forest[x + p, y + q] = fire
+                    if forest[x + r, y + s] == tree and np.random.random() <= prob_spread:
+                        forest[x + r, y + s] = fire
 
     return forest
 
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     cmap = colors.ListedColormap(["#d4a78c", "lawngreen", "#02a102", "#c73838"])
 
     SEED = 42
-    SIZE = 500
+    SIZE = 50
     FOREST = populate_grid(SIZE)
     BURN_TIME = np.zeros((SIZE, SIZE), dtype=int)
     MATRIX = ax.matshow(FOREST, cmap=cmap)
