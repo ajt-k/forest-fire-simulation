@@ -30,7 +30,7 @@ def fire_spread(forest, size):
 
 def populate_grid(size):
     prob_tree, prob_ignite = 0.8, 0.05
-    fire, tree = 2, 1
+    fire, tree, empty = 2, 1, 0
     forest = np.zeros((size + 1, size + 1), dtype=int)
     for x in range(0, size):
         for y in range(0, size):
