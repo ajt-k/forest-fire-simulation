@@ -9,6 +9,7 @@ from perlin_numpy import (
     generate_perlin_noise_2d, generate_fractal_noise_2d
 )
 
+fire = 2
 
 
 def fire_spread(size,forest,fire_tracker):
@@ -72,34 +73,16 @@ def combine_grids(size,forest,fire_tracker):
                 
     return show_grid
 
-def full_generation(seeds,size,gen_num):
-    fire = 2
-    forest,fire_map = initialize_forest(seeds,size)
-   
-    
-    fire_map[128,128] = fire                          #set initial fire position
-   
-    for x in range(0,gen_num):
-        forest,fire_map = fire_spread(size,forest,fire_map)              # apply fire function
-        
-        show_grid = combine_grids(size,forest,fire_map)
-       
-        plt.figure(figsize=(5,5))
-        plt.imshow(show_grid, cmap='RdYlGn_r', interpolation='lanczos',vmin=0,vmax = 2)
-        plt.colorbar()
-        plt.show()
-        
-        
-    plt.imshow(forest, cmap = 'Greens')
 
+       
 def animate(i):
     global SIZE
     global FOREST
     global FIRE_MAP
     global MATRIX
     
-    forest,fire_map = fire_spread(size,forest,fire_map) 
-    show_grid = combine_grids(size,forest,fire_map)
+    FOREST, FIRE_MAP = fire_spread(SIZE,FOREST,FIRE_MAP) 
+    show_grid = combine_grids(SIZE,FOREST,FIRE_MAP)
     
     MATRIX.set_array(show_grid)
     return MATRIX,FOREST,FIRE_MAP
@@ -111,8 +94,8 @@ SIZE = 256
 FOREST, FIRE_MAP = initialize_forest(SEED,SIZE)
 MATRIX = ax.matshow(FOREST, cmap='RdYlGn_r')
 
-
+FIRE_MAP[128,128] = fire   
 np.random.seed(SEED)
-ani = animation.FuncAnimation(fig, animate, frames=20000, interval=1000)
+ani = animation.FuncAnimation(fig, animate, frames=20000, interval=500)
 
 plt.show()
