@@ -8,8 +8,8 @@ from matplotlib import colors, animation
 from perlin_numpy import (
     generate_perlin_noise_2d, generate_fractal_noise_2d
 )
-
 fire = 2
+
 
 
 def fire_spread(size,forest,fire_tracker):
@@ -20,10 +20,9 @@ def fire_spread(size,forest,fire_tracker):
     for x in range(1,size-1):
         for y in range(1,size-1):
                 for p,q in region:
-                    if fire_tracker[x,y] > 1 and np.random.random() <= prob_spread*forest[x+p,y+q]:
+                    if fire_tracker[x,y] > 1 and fire_tracker[x+p,y+q] < 1 and np.random.random() <= prob_spread*forest[x+p,y+q]:
                         fire_tracker[x+p,y+q] = 1+forest[x+p,y+q]
                         lst.append((p,q))
-                            
                             
                            
                     
@@ -54,8 +53,10 @@ def burn_out(size,forest,fire_tracker):
     lst = []
     for x in range(1,size-1):
         for y in range(1,size-1):
-            fire_tracker[x,y] = fire_tracker[x,y] - (1/2)*forest[x,y]
-           
+            
+            fire_tracker[x,y] = fire_tracker[x,y] - (1/6)*forest[x,y]
+            if fire_tracker[x,y] > 1:
+                forest[x,y] = forest[x,y]- 0.3
     
     return forest,fire_tracker
 
@@ -74,7 +75,6 @@ def combine_grids(size,forest,fire_tracker):
     return show_grid
 
 
-       
 def animate(i):
     global SIZE
     global FOREST
@@ -82,14 +82,27 @@ def animate(i):
     global MATRIX
     
     FOREST, FIRE_MAP = fire_spread(SIZE,FOREST,FIRE_MAP) 
-    show_grid = combine_grids(SIZE,FOREST,FIRE_MAP)
     
+    show_grid = combine_grids(SIZE,FOREST,FIRE_MAP)
+   
+    burn_out(SIZE, FOREST, FIRE_MAP)
+   
     MATRIX.set_array(show_grid)
+    
     return MATRIX,FOREST,FIRE_MAP
 
 
 fig, ax = plt.subplots()
 SIZE = 256
+SEED = np.random.randint(0,1000)
+FOREST, FIRE_MAP = initialize_forest(SEED,SIZE)
+MATRIX = ax.matshow(FOREST, cmap='RdYlGn_r')
+
+FIRE_MAP[128,128] = fire   
+np.random.seed(SEED)
+ani = animation.FuncAnimation(fig, animate, frames=20000, interval=500)
+
+plt.show()
 
 FOREST, FIRE_MAP = initialize_forest(SEED,SIZE)
 MATRIX = ax.matshow(FOREST, cmap='RdYlGn_r')
