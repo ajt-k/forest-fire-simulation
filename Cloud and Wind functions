@@ -1,0 +1,89 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import  animation
+from perlin_numpy import (
+    generate_perlin_noise_2d, generate_fractal_noise_2d
+)
+
+
+
+def ccircle(r,p,q,cloud_map):
+    size = 256
+    for x in range(0,size):
+        for y in range(0,size):
+            if r**2>=(abs(x-p)**2)/2+(abs(y-q))**2>(r-(r/8))**2:
+                cloud_map[x,y] = 0.65
+            if (r-(r/8))**2>(abs(x-p)**2)/2+(abs(y-q))**2>(r-(r/3)):
+                cloud_map[x,y] = 0.85
+            if (r-(r/3))**2>(abs(x-p)**2)/2+(abs(y-q))**2:
+                cloud_map[x,y] = 0.98
+    return cloud_map
+
+
+
+
+def blow_clouds(n,ang,mag,cloud_map):
+    lst = []
+    for x in range(2,254):
+        for y in range(2,254):
+            if cloud_map[x,y] > 0:
+                lst.append((x,y))
+    for x,y in lst:
+    
+        cloud_map[round(n*np.cos(ang[x,y]))+x,round(n*np.sin(ang[x,y]))+y] = cloud_map[x,y]
+        cloud_map[x,y] = 0
+    return cloud_map
+
+def update(mag_map,working_map):
+    
+    working_map_1 = generate_perlin_noise_2d((256,256),(4,4),(True,True))
+    for x in range(0,256):
+        for y in range(0,256):
+            mag[x,y] = 1.17*(1/6*working_map_1[x,y]+5/6*mag[x,y])
+            
+    return mag,ang
+    
+def animate(i):
+    
+
+    update(mag,working_map)
+    blow_clouds(2,ang,mag,cloud_map)
+    MATRIX.set_array(cloud_map)
+    
+    return cloud_map,mag
+
+fig, ax = plt.subplots()
+
+SIZE = 256
+
+SEED = np.random.randint(0,1000)
+
+
+cmap = 'Blues'
+np.random.seed(1)
+
+
+cloud_map = np.zeros((256,256))
+cloud = 1
+ccircle(15,128,128,cloud_map)
+
+mag = generate_perlin_noise_2d((256,256),(2,2),(True,True))
+ang = generate_perlin_noise_2d((256,256),(2,2),(True,True))
+
+
+
+for x in range(0,256):
+    for y in range(0,256):
+        ang[x,y] = ang[x,y]*np.pi
+        mag[x,y] +=1
+        
+working_map= np.zeros((256,256))
+
+MATRIX = ax.matshow(cloud_map,cmap = cmap,vmin = 0,vmax = 1)
+
+    
+
+
+ani = animation.FuncAnimation(fig, animate, frames=20000, interval=200)
+
+plt.show()
