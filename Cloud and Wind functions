@@ -7,7 +7,7 @@ from perlin_numpy import (
 
 
 
-def ccircle(r,p,q,cloud_map):
+def circle(r,p,q,cloud_map):
     size = 256
     for x in range(0,size):
         for y in range(0,size):
@@ -65,7 +65,7 @@ np.random.seed(1)
 
 cloud_map = np.zeros((256,256))
 cloud = 1
-ccircle(15,128,128,cloud_map)
+circle(15,128,128,cloud_map)
 
 mag = generate_perlin_noise_2d((256,256),(2,2),(True,True))
 ang = generate_perlin_noise_2d((256,256),(2,2),(True,True))
