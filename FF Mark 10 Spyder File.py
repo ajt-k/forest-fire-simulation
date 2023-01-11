@@ -175,7 +175,12 @@ def lst_filter(fireLst, Margin):
 
     return fireLst
 
-
+# very odd function to create a nice gradient when plotting individual points
+#it maps forest fuel values to color values from whatever range of color you want
+# basically I just made a point-slope line from the RGB values I wanted 
+#@param x: value of forest at the discrete unit
+#@param min,max: min and max values of the forest
+#@return: a hex value because matplotlib didn't like RGB arrays
 def color_map(x, min, max):
     if x <= min:
         a = (0, 0, 0)
@@ -188,6 +193,9 @@ def color_map(x, min, max):
     hcolors = webcolors.rgb_to_hex(a)
     return hcolors
 
+## clear figure, calculate the points, filter the lst, 
+#then: for each point, calculate the color at that point then plot it
+# I am pretty sure the plotting each point is bad but it's also cool looking
 
 def animate(i):
     global SIZE, FOREST, FIRE_LST, WIND_DIRECTION, WIND_STRENGTH
@@ -197,12 +205,11 @@ def animate(i):
         FIRE_LST, FOREST, WIND_DIRECTION, WIND_STRENGTH)
 
     FIRE_LST = lst_filter(FIRE_LST, 1.45)
-    COLOR = []
+   
     for x, y in FIRE_LST:
         color = color_map(
             FOREST[(int)(np.floor(x)), (int)(np.floor(y))], 0.3, 4.5)
-        COLOR.append(color)
-
+        
         ax.scatter(x, y, 10, color)
 
     #plt.scatter(X, Y, 5)
