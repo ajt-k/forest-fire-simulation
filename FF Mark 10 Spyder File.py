@@ -30,7 +30,7 @@ def magnitude(X, n, a):
 
         a = -a
 
-        # even more confused about this one
+        # This is confusing
 
         reg = {(1, 0): abs(a), (1, 1): abs(180-abs(a-135)), (0, 1): abs(180-abs(a-90)),
                (-1, 1): abs(180-abs(a-45)), (-1, 0): abs(180-a),
