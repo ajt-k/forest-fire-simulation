@@ -39,6 +39,14 @@ def magnitude(X, n, a):
         d = n**(-(reg[X]/90)+1)
     return d
 
+##
+#--- 
+#--- Steps: 1. Distribute fuel evenly among 8 vectors in the cardinal directions (N, NE, etc.)
+#---        2. Calculate vectors for the diagonal ones (pythag theorem)
+#---        3. Calculate the magnitude and then set a constant to be equal to all the factor used
+#---             4. These factors include: forest weight at the value of where it will spread, the magnitude, and the evenly distributed fuel.
+#---        5. Multiply each aspect of the list by its respective constant
+#
 
 def calculate_vectors(tup, forest, wind_direction, wind_strength):
     region = [(1, 0), (1, 1), (0, 1), (-1, 1),
@@ -96,43 +104,62 @@ def initialize_grid(size):
 
     return forest, wind_direction, wind_strength
 
+##----Directional Movement function is my new calculation function. it takes in the already exsisting fireLst, and all the arrays, 
+#and calculates where all the points have to move. 
+#---It also serves to 'burn out' grid by removing forest fuel and checking to see if the forest fuel is above a certain value
+#@param fireLst: list of tuples of doubles - holds where the fire is
+#@param all the other bits: they are all of the other arrays just look at the name
+#@return: updated fireLst and forest
+
 
 def directional_movement(fireLst, forest, wind_direction, wind_strength):
+    # temporary list to be added at the end of the function
     c = []
+    #for testing
     count = 0
     for i in fireLst:
 
-        # get coords (cont == continuous, disc == discrete)
+        # get coords (cont == continuous (mainly for final calculations), disc == discrete(mainly for arrays)
         contX, contY = i[0], i[1]
         discX, discY = (int)(np.floor(contX)), (int)(np.floor(contY))
-
+        
+        #-- Check to see if points are inside the bounds of the forest as it leads to errors
+        #--Also to check if the fuel is enough to sustain fire. 
+        #@param: 0.3: fuel required to sustain fire
         if discX < len(forest)-1 and discY < len(forest)-1 and (forest[discX, discY] >= 0.3):
 
-            # Wind vectors - finding and reducing vectors is n*log(n)??
+            # Wind vectors using calculate vectors
             vectors = calculate_vectors(
                 (discX, discY), forest, wind_direction, wind_strength)
-
+            
+            # Adding the calculated vectors to the continuous coordinates from before
             for v in vectors:
                 c.append(tuple((contX+v[0], contY+v[1])))
 
             # TODO: humidity
             # TODO: elevation
 
-            # update function
-
+            #forest update / 'burn out' function
+            # this fraction can be changed which will change how long points last
+          
             forest[discX, discY] *= 1/2
+        # If it didn't meet the if statemement before it should be removed
         else:
             fireLst.remove(i)
 
             # New coords
 
-    # final check to weed out points that are too close to each other
-    # see below for description
+    # add the temp list to the actual list
     fireLst += c
 
     return fireLst, forest
 
-
+##This function basically filters the list down. Directional spread is a 8 to the n power algorithm, so this function basically trims it down
+#It works by iterating over the list, and if a point is within a certain x and y distance it is eliminated. This x and y distance is the parameter Margin
+#
+#@param: fireLst: list of tuples of doubles where the fire is.     
+#@param: Margin: if the points are between within the margin of another points x and y values they are removes
+#@return: filtered fireLst
 def lst_filter(fireLst, Margin):
     index = 1
 
